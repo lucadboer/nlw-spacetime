@@ -3,12 +3,20 @@ import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
 import { z } from 'zod'
 
 export async function MemmoryRoutes(app: FastifyInstance) {
+  app.addHook('preHandler', async (req) => {
+    await req.jwtVerify()
+  })
+
   app.get('/memmories', async (req: FastifyRequest, reply: FastifyReply) => {
     if (req.method !== 'GET') {
       return
     }
 
-    const memmories = await prisma.memmory.findMany()
+    const memmories = await prisma.memmory.findMany({
+      where: {
+        userId: req.user.sub,
+      },
+    })
 
     return memmories.map((memmory) => {
       return {
@@ -22,48 +30,46 @@ export async function MemmoryRoutes(app: FastifyInstance) {
   app.get(
     '/memmories/:id',
     async (req: FastifyRequest, reply: FastifyReply) => {
-      const memmoryParamsSchemma = z.object({
-        id: z.string().uuid(),
-      })
-
-      const { id } = memmoryParamsSchemma.parse(req.params)
-
       if (req.method !== 'GET') {
         return
       }
+      const memmoryParamsSchema = z.object({
+        id: z.string().uuid(),
+      })
 
-      const memmory = await prisma.memmory.findUnique({
+      const { id } = memmoryParamsSchema.parse(req.params)
+
+      const memmory = await prisma.memmory.findUniqueOrThrow({
         where: {
           id,
         },
       })
 
+      if (!memmory.isPublic && memmory.userId === req.user.sub) {
+        return reply.status(401).send()
+      }
       return memmory
     },
   )
 
   app.post('/memmories', async (req: FastifyRequest, reply: FastifyReply) => {
-    const memmoryBodySchemma = z.object({
-      content: z.string(),
-      isPublic: z.coerce.boolean().default(false),
-      coverUrl: z.string(),
-      userId: z.string().uuid(),
-    })
-
-    const { content, coverUrl, isPublic, userId } = memmoryBodySchemma.parse(
-      req.body,
-    )
-
     if (req.method !== 'POST') {
       return null
     }
+    const memmoryBodySchema = z.object({
+      content: z.string(),
+      isPublic: z.coerce.boolean().default(false),
+      coverUrl: z.string(),
+    })
+
+    const { content, coverUrl, isPublic } = memmoryBodySchema.parse(req.body)
 
     await prisma.memmory.create({
       data: {
         content,
         coverUrl,
         isPublic,
-        userId,
+        userId: req.user.sub,
       },
     })
   })
@@ -71,25 +77,35 @@ export async function MemmoryRoutes(app: FastifyInstance) {
   app.put(
     '/memmories/:id',
     async (req: FastifyRequest, reply: FastifyReply) => {
-      const memmoryParamsSchemma = z.object({
+      if (req.method !== 'PUT') {
+        return null
+      }
+
+      const memmoryParamsSchema = z.object({
         id: z.string().uuid(),
       })
 
-      const memmoryBodySchemma = z.object({
+      const memmoryBodySchema = z.object({
         content: z.string(),
         isPublic: z.coerce.boolean().default(false),
         coverUrl: z.string(),
       })
 
-      const { id } = memmoryParamsSchemma.parse(req.params)
+      const { id } = memmoryParamsSchema.parse(req.params)
 
-      const { content, coverUrl, isPublic } = memmoryBodySchemma.parse(req.body)
+      const { content, coverUrl, isPublic } = memmoryBodySchema.parse(req.body)
 
-      if (req.method !== 'PUT') {
-        return null
+      const memmory = await prisma.memmory.findFirstOrThrow({
+        where: {
+          id,
+        },
+      })
+
+      if (memmory.userId !== req.user.sub) {
+        return reply.status(401).send()
       }
 
-      await prisma.memmory.update({
+      const updatedMemmory = await prisma.memmory.update({
         where: {
           id,
         },
@@ -99,21 +115,33 @@ export async function MemmoryRoutes(app: FastifyInstance) {
           isPublic,
         },
       })
+
+      return updatedMemmory
     },
   )
 
   app.delete(
     '/memmories/:id',
     async (req: FastifyRequest, reply: FastifyReply) => {
-      const memmoryParamsSchemma = z.object({
-        id: z.string().uuid(),
-      })
-
-      const { id } = memmoryParamsSchemma.parse(req.params)
-
       if (req.method !== 'DELETE') {
         return null
       }
+      const memmoryParamsSchema = z.object({
+        id: z.string().uuid(),
+      })
+
+      const { id } = memmoryParamsSchema.parse(req.params)
+
+      const memmory = await prisma.memmory.findFirstOrThrow({
+        where: {
+          id,
+        },
+      })
+
+      if (memmory.userId !== req.user.sub) {
+        return reply.status(401).send()
+      }
+
       await prisma.memmory.delete({
         where: {
           id,
