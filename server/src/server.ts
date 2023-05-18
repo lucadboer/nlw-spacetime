@@ -1,8 +1,12 @@
 import fastify from 'fastify'
+import cors from '@fastify/cors'
 import { MemmoryRoutes } from './routes/memmory'
 
 const app = fastify()
 
+app.register(cors, {
+  origin: true,
+})
 app.register(MemmoryRoutes)
 
 app

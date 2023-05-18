@@ -1,5 +1,6 @@
 import { prisma } from '@/lib/prisma'
 import { FastifyInstance, FastifyReply, FastifyRequest } from 'fastify'
+import { z } from 'zod'
 
 export async function MemmoryRoutes(app: FastifyInstance) {
   app.get('/memmories', async (req: FastifyRequest, reply: FastifyReply) => {
@@ -21,6 +22,12 @@ export async function MemmoryRoutes(app: FastifyInstance) {
   app.get(
     '/memmories/:id',
     async (req: FastifyRequest, reply: FastifyReply) => {
+      const memmoryParamsSchemma = z.object({
+        id: z.string().uuid(),
+      })
+
+      const { id } = memmoryParamsSchemma.parse(req.params)
+
       if (req.method !== 'GET') {
         return
       }
@@ -30,22 +37,54 @@ export async function MemmoryRoutes(app: FastifyInstance) {
           id,
         },
       })
+
+      return memmory
     },
   )
 
   app.post('/memmories', async (req: FastifyRequest, reply: FastifyReply) => {
+    const memmoryBodySchemma = z.object({
+      content: z.string(),
+      isPublic: z.coerce.boolean().default(false),
+      coverUrl: z.string(),
+      userId: z.string().uuid(),
+    })
+
+    const { content, coverUrl, isPublic, userId } = memmoryBodySchemma.parse(
+      req.body,
+    )
+
     if (req.method !== 'POST') {
       return null
     }
 
     await prisma.memmory.create({
-      data,
+      data: {
+        content,
+        coverUrl,
+        isPublic,
+        userId,
+      },
     })
   })
 
   app.put(
     '/memmories/:id',
     async (req: FastifyRequest, reply: FastifyReply) => {
+      const memmoryParamsSchemma = z.object({
+        id: z.string().uuid(),
+      })
+
+      const memmoryBodySchemma = z.object({
+        content: z.string(),
+        isPublic: z.coerce.boolean().default(false),
+        coverUrl: z.string(),
+      })
+
+      const { id } = memmoryParamsSchemma.parse(req.params)
+
+      const { content, coverUrl, isPublic } = memmoryBodySchemma.parse(req.body)
+
       if (req.method !== 'PUT') {
         return null
       }
@@ -54,7 +93,11 @@ export async function MemmoryRoutes(app: FastifyInstance) {
         where: {
           id,
         },
-        data,
+        data: {
+          content,
+          coverUrl,
+          isPublic,
+        },
       })
     },
   )
@@ -62,6 +105,12 @@ export async function MemmoryRoutes(app: FastifyInstance) {
   app.delete(
     '/memmories/:id',
     async (req: FastifyRequest, reply: FastifyReply) => {
+      const memmoryParamsSchemma = z.object({
+        id: z.string().uuid(),
+      })
+
+      const { id } = memmoryParamsSchemma.parse(req.params)
+
       if (req.method !== 'DELETE') {
         return null
       }
