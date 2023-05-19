@@ -1,6 +1,12 @@
+import { styled } from 'nativewind'
+import { makeRedirectUri, useAuthRequest } from 'expo-auth-session'
+import { useEffect } from 'react'
+import { api } from '../src/lib/api'
+import * as SecureStore from 'expo-secure-store'
 import { StatusBar } from 'expo-status-bar'
 import { ImageBackground, Text, TouchableOpacity, View } from 'react-native'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { useRouter } from 'expo-router'
 
 import {
   useFonts,
@@ -13,9 +19,55 @@ import { BaiJamjuree_700Bold } from '@expo-google-fonts/bai-jamjuree'
 import blurBg from '@assets/blur.png'
 import Stripes from '@assets/stripes.svg'
 import Logo from '@assets/logo.svg'
-import { styled } from 'nativewind'
+
+const discovery = {
+  authorizationEndpoint: 'https://github.com/login/oauth/authorize',
+  tokenEndpoint: 'https://github.com/login/oauth/access_token',
+  revocationEndpoint:
+    'https://github.com/settings/connections/applications/5109ea28c825154486b0',
+}
 
 export default function App() {
+  const router = useRouter()
+
+  const [request, response, signInWithGithub] = useAuthRequest(
+    {
+      clientId: '5109ea28c825154486b0',
+      scopes: ['identity'],
+      redirectUri: makeRedirectUri({
+        scheme: 'nlwspacetime',
+      }),
+    },
+    discovery,
+  )
+
+  async function handleGithubOAuthCode(code: string) {
+    const response = await api.post('/register', {
+      code,
+    })
+
+    const { token } = response.data
+
+    await SecureStore.setItemAsync('token', token)
+
+    router.push('/memmories')
+  }
+
+  useEffect(() => {
+    // console.log(
+    //   'response',
+    //   makeRedirectUri({
+    //     scheme: 'nlwspacetime',
+    //   }),
+    // )
+
+    if (response?.type === 'success') {
+      const { code } = response.params
+
+      handleGithubOAuthCode(code)
+    }
+  }, [response])
+
   const [hasLoadedFonts] = useFonts({
     Roboto_400Regular,
     Roboto_700Bold,
@@ -49,7 +101,10 @@ export default function App() {
               quiser) com o mundo!
             </Text>
           </View>
-          <TouchableOpacity className="rounded-full bg-green-500 px-4 py-3">
+          <TouchableOpacity
+            onPress={() => signInWithGithub()}
+            className="rounded-full bg-green-500 px-4 py-3"
+          >
             <Text className="font-alt text-sm leading-none">
               COMEÇAR A CADASTRAR
             </Text>
