@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import { getUser } from '@/utils/getUser'
+import { LogOut } from 'lucide-react'
 
 export function Profile() {
   const { name, avatarUrl } = getUser()
@@ -17,10 +18,10 @@ export function Profile() {
       <div className="flex flex-col">
         <span>{name}</span>
         <a
-          href=""
-          className="text-sm text-red-500 transition hover:text-red-400"
+          href="/api/auth/logout"
+          className="flex items-center gap-1 text-sm text-red-500 transition hover:text-red-400"
         >
-          Quero sair
+          <LogOut size={16} /> Quero sair
         </a>
       </div>
     </div>

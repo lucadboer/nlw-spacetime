@@ -2,8 +2,6 @@ import { api } from '@/libs/axios'
 import { NextRequest, NextResponse } from 'next/server'
 
 export async function GET(request: NextRequest) {
-  console.log('aaa')
-
   const { searchParams } = new URL(request.url)
   const code = searchParams.get('code')
 
@@ -14,6 +12,7 @@ export async function GET(request: NextRequest) {
   })
 
   const { token } = registerResponse.data
+  console.log(redirectTo)
 
   const redirectURL = redirectTo ?? new URL('/', request.url)
 

@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import userPhoto from '../assets/userPhoto.svg'
+import Link from 'next/link'
 
 export function SignIn() {
   return (
@@ -12,12 +13,12 @@ export function SignIn() {
         alt="Foto de perfil do usuário"
       />
       <p className="max-w-[160px]">
-        <a
+        <Link
           href={`https://github.com/login/oauth/authorize?client_id=${process.env.NEXT_PUBLIC_GITHUB_CLIENT_ID}`}
           className="underline transition hover:text-gray-50"
         >
           Crie sua conta
-        </a>{' '}
+        </Link>{' '}
         e salve suas memórias!
       </p>
     </div>
