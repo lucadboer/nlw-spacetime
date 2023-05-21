@@ -1,16 +1,11 @@
+import { MediaPicker } from '@/components/MediaPicker'
 import { Camera, ChevronLeft } from 'lucide-react'
 import Link from 'next/link'
 
 export default function New() {
   return (
     <div className="flex flex-1 flex-col gap-4">
-      <input
-        type="file"
-        name="midia"
-        id="midia"
-        className="invisible h-0 w-0"
-      />
-
+      <MediaPicker />
       <Link
         href="/"
         className="flex items-center gap-1 transition hover:text-gray-200"
