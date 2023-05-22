@@ -8,7 +8,7 @@ import { promisify } from 'node:util'
 const pump = promisify(pipeline)
 
 export async function UploadRoutes(app: FastifyInstance) {
-  app.post('/update', async (req: FastifyRequest, reply: FastifyReply) => {
+  app.post('/upload', async (req: FastifyRequest, reply: FastifyReply) => {
     const upload = await req.file({
       limits: {
         fileSize: 5242880,

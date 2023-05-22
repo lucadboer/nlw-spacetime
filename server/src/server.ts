@@ -3,6 +3,8 @@ import cors from '@fastify/cors'
 import { MemmoryRoutes } from './routes/memmory'
 import { env } from './env'
 import { AuthRoutes } from './routes/auth'
+import { UploadRoutes } from './routes/upload'
+
 import fastifyJwt from '@fastify/jwt'
 import multipart from '@fastify/multipart'
 import staticPath from '@fastify/static'
@@ -27,6 +29,7 @@ app.register(multipart)
 
 app.register(AuthRoutes)
 app.register(MemmoryRoutes)
+app.register(UploadRoutes)
 
 app
   .listen({

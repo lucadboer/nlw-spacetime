@@ -62,6 +62,8 @@ export async function MemmoryRoutes(app: FastifyInstance) {
       coverUrl: z.string(),
     })
 
+    console.log(req.body)
+
     const { content, coverUrl, isPublic } = memmoryBodySchema.parse(req.body)
 
     await prisma.memmory.create({
