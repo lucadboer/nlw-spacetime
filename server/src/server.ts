@@ -34,7 +34,8 @@ app.register(UploadRoutes)
 app
   .listen({
     port: env.PORT,
-    host: '0.0.0.0',
+    // deixar ativo para o mobile
+    // host: '0.0.0.0',
   })
   .then(() => {
     console.log('Server is running 🚀')
