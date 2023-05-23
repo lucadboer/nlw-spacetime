@@ -11,15 +11,15 @@ datasource db {
 }
 
 model User {
-  id        String    @id @default(uuid())
-  githubId  Int       @unique
+  id        String   @id @default(uuid())
+  githubId  Int      @unique
   login     String
   name      String
   avatarUrl String
-  Memmory   Memmory[]
+  Memory    Memory[]
 }
 
-model Memmory {
+model Memory {
   id        String   @id @default(uuid())
   userId    String
   coverUrl  String

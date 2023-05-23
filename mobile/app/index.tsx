@@ -39,7 +39,7 @@ export default function App() {
 
     await SecureStore.setItemAsync('token', token)
 
-    router.push('/memmories')
+    router.push('/memories')
   }
 
   useEffect(() => {

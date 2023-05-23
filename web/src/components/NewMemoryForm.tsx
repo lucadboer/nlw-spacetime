@@ -7,10 +7,10 @@ import { api } from '@/libs/axios'
 import Cookie from 'js-cookie'
 import { useRouter } from 'next/navigation'
 
-export function NewMemmoryForm() {
+export function NewMemoryForm() {
   const router = useRouter()
 
-  async function handleCreateMemmory(e: FormEvent<HTMLFormElement>) {
+  async function handleCreatememory(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
 
     const formData = new FormData(e.currentTarget)
@@ -31,7 +31,7 @@ export function NewMemmoryForm() {
     const token = Cookie.get('token')
 
     await api.post(
-      '/memmories',
+      '/memories',
       {
         content: formData.get('content'),
         isPublic: formData.get('isPublic'),
@@ -48,7 +48,7 @@ export function NewMemmoryForm() {
   }
 
   return (
-    <form onSubmit={handleCreateMemmory} className="flex flex-1 flex-col gap-2">
+    <form onSubmit={handleCreatememory} className="flex flex-1 flex-col gap-2">
       <div className="flex items-center gap-6">
         <label
           className="flex cursor-pointer items-center gap-2 transition hover:text-gray-200"

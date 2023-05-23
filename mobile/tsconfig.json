@@ -14,7 +14,7 @@
         "./src/assets/*"
       ],
       "@components/*": [
-        "./src/components/*"
+        "app/components/*"
       ],
       "@screens/*": [
         "./src/screens/*"
