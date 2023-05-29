@@ -36,11 +36,11 @@ export default async function Home() {
   }
 
   return (
-    <div className="flex flex-col justify-center p-8">
+    <div className="flex flex-col justify-center gap-10 p-8">
       {memories.map((memory) => {
         return (
           <div key={memory.id} className="mb-10 space-y-4">
-            <time className="-ml-8 flex items-center gap-2 text-xs leading-relaxed text-gray-100 before:h-px before:w-4 before:bg-gray-50">
+            <time className="-ml-8 flex items-center gap-2 text-sm leading-relaxed text-gray-100 before:h-px before:w-4 before:bg-gray-50">
               {dayjs(memory.createdAt).format('D[ de ]MMMM[, ]YYYY')}
             </time>
             <Image
@@ -49,9 +49,9 @@ export default async function Home() {
               height={280}
               quality={1}
               alt=""
-              className="h-[280px] w-full rounded-lg"
+              className="aspect-video w-full rounded-lg object-cover"
             />
-            <p className="max-w-[592px] text-lg leading-relaxed text-gray-100">
+            <p className="text-lg leading-relaxed text-gray-100">
               {memory.excerpt}
             </p>
           </div>

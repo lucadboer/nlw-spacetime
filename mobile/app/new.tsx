@@ -18,7 +18,7 @@ export default function Newmemory() {
 
         <Link href="/memories" asChild>
           <TouchableOpacity className="h-10 w-10 flex-row items-center justify-center rounded-full bg-purple-500">
-            <Icon name="arrow-left" size={18} color={'#fff'} />
+            <Icon name="arrow-left" size={20} color={'#fff'} />
           </TouchableOpacity>
         </Link>
       </View>
